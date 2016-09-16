@@ -1,0 +1,8 @@
+<html>
+<head>
+    <h1>Analytics</h1>
+</head>
+<body>
+    <div class='analytics' id='analytics'></div>
+</body>
+</html>
