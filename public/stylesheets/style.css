@@ -28,3 +28,15 @@ a {
   border-radius: 50px;
   clip: rect(0px, 100px, 100px, 50px);
 }
+
+table {
+  border-collapse: collapse;
+  width: 15%;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}

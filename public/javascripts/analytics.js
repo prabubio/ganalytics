@@ -3,7 +3,7 @@
 
 var AnalyticsDashBoard = React.createClass({
     getInitialState: function (){
-        return {data: {}, selected: ""};
+        return {data: {}, selectedYear: "", selectedProduct:""};
     },
     componentDidMount: function () {
         var data = {
@@ -38,16 +38,21 @@ var AnalyticsDashBoard = React.createClass({
                 }
             }
         };
-        this.setState({data: data, selected: "2012"});
+        this.setState({data: data, selectedYear: "2012"});
     },
     onYearChange: function (year) {
         console.log('year changed to ', year);
-        this.setState({selected: year});
+        this.setState({selectedYear: year, selectedProduct: ""});
+    },
+    onProductClick: function (year, product) {
+        console.log('product selected: ', product);
+        this.setState({selectedProduct: product});
     },
     render: function () {
         var data = this.state.data;
         var years = data.revenue || {};
-        var selectedYear = this.state.selected;
+        var selectedYear = this.state.selectedYear;
+        var selectedProduct = this.state.selectedProduct;
         console.log(years);
         return (
             <div className="analytics-dash">
@@ -59,6 +64,12 @@ var AnalyticsDashBoard = React.createClass({
                 <RevenuePieChart
                     data = {years[selectedYear]}
                     year = {selectedYear}
+                    onProductClick = {this.onProductClick}
+                />
+                <RevenueReport
+                    data = {years[selectedYear]}
+                    year = {selectedYear}
+                    product = {selectedProduct}
                 />
             </div>
         );
@@ -106,7 +117,13 @@ var YearSelector = React.createClass({
 });
 
 var RevenuePieChart = React.createClass({
+    handleClick: function (evt) {
+        var selectedProduct = evt.target.dataset.id;
+        console.log("clicked a product", evt.target);
+        this.props.onProductClick(this.props.year, selectedProduct);
+    },
     render: function () {
+        var self = this;
         console.log('I am in RevenuePieChart year: ', this.props.year, ', data = ', this.props.data);
 
         var productsData = this.props.data;
@@ -145,7 +162,7 @@ var RevenuePieChart = React.createClass({
             var result;
             pieConstructed = pieConstructed + end;
 
-            var createSlice = function (id, start, end) {
+            var createSlice = function (product, id, start, end) {
                 var startTransform = 'rotate(' + start + 'deg)';
                 var endTransform = 'rotate(' + end + 'deg)';
                 var divStyle = {
@@ -160,19 +177,20 @@ var RevenuePieChart = React.createClass({
                     key={id}
                     id={id}
                     className="hold"
-                    style={divStyle}>
-                    <div className="pie" style={pieStyle}>'
+                    data-id={product}
+                    style={divStyle}
+                    onClick={self.handleClick}>
+                    <div className="pie" style={pieStyle} onClick={self.handleClick} data-id={product}>
                     </div>
                 </div>);
             };
 
-
             if (revPieAvg[product] > 180) {
-                slices.push(createSlice(product + '1', start, 180));
-                slices.push(createSlice(product + '2', start + 180, end - 180));
+                slices.push(createSlice(product, product + '-1', start, 180));
+                slices.push(createSlice(product, product + '-2', start + 180, end - 180));
 
             } else {
-                slices.push(createSlice(product, start, end));
+                slices.push(createSlice(product, product, start, end));
             }
         });
 
@@ -187,13 +205,41 @@ var RevenuePieChart = React.createClass({
 
 var RevenueReport = React.createClass({
     render: function () {
+        var product = this.props.product;
+        var year = this.props.year;
+        var data = this.props.data;
+        if (product === "") {
+            return null;
+        }
+        var productData = data[product];
+        var rows = [];
 
-    },
-    getInitialState: function () {
+        for (var country in productData) {
+            rows.push(
+                <tr key={country}>
+                    <td>{year}</td>
+                    <td>{product}</td>
+                    <td>{country}</td>
+                    <td>{productData[country]}</td>
+                </tr>
+            )
+        }
 
-    },
-    componentDidMount: function () {
-
+        return (
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Product</th>
+                        <th>Country</th>
+                        <th>Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        );
     }
 });
 
