@@ -6,39 +6,25 @@ var AnalyticsDashBoard = React.createClass({
         return {data: {}, selectedYear: "", selectedProduct:""};
     },
     componentDidMount: function () {
-        var data = {
-            "revenue": {
-                "2012": {
-                    "Server": {
-                        "US": 6000,
-                        "China": 1340,
-                        "Japan": 2000,
-                        "EU": 4000
-                    },
-                    "Database": {
-                        "US": 2400,
-                        "China": 400,
-                        "Japan": 1200,
-                        "EU": 4700
-                    }
-                },
-                "2013": {
-                    "Server": {
-                        "US": 7000,
-                        "China": 2340,
-                        "Japan": 3000,
-                        "EU": 3500
-                    },
-                    "Database": {
-                        "US": 14400,
-                        "China": 200,
-                        "Japan": 3200,
-                        "EU": 2000
+        $.ajax({
+            url: '/analytics',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                var selectedYear = "";
+                for (var year in data) {
+                    if (data.hasOwnProperty(year)) {
+                        selectedYear = year;
+                        break;
                     }
                 }
-            }
-        };
-        this.setState({data: data, selectedYear: "2012"});
+                this.setState({data: data, selectedYear: selectedYear});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/analytics', status, err.toString());
+            }.bind(this)
+        });
+        // this.setState({data: data, selectedYear: "2012"});
     },
     onYearChange: function (year) {
         console.log('year changed to ', year);
@@ -50,7 +36,7 @@ var AnalyticsDashBoard = React.createClass({
     },
     render: function () {
         var data = this.state.data;
-        var years = data.revenue || {};
+        var years = data || {};
         var selectedYear = this.state.selectedYear;
         var selectedProduct = this.state.selectedProduct;
         console.log(years);
@@ -152,7 +138,7 @@ var RevenuePieChart = React.createClass({
         }
 
         var pieConstructed = 0;
-        var pieColors = ['#1b458b', '#cc0000'];
+        var pieColors = ['#1b458b', '#cc0000', '#00cc00'];
         var slices=[];
         products.forEach(function (product, i) {
             revPieAvg[product] = Math.round(productRev[product] / revTotal * 360);

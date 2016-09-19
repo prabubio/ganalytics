@@ -1,3 +1,4 @@
+'use strict';
 var fs = require('fs');
 
 function Model () {
@@ -51,11 +52,17 @@ Model.prototype._addRevenue = function (year, product, country, revenue) {
     }
 };
 
-Model.prototype.readData = function (callback) {
+Model.prototype.readData = function (cb) {
     var self = this;
-    fs.readFile('data.json', 'utf8', function (err, data) {
+    fs.readFile('./model/data.json', 'utf8', function (err, data) {
+        if (err) {
+            console.log('Cant read file: ', err);
+            return cb(err);
+        }
         data = JSON.parse(data);
         self._parseRevenueData(data);
-        return callback(null, self._analyticsData);
+        return cb(null, self._analyticsData);
     });
 };
+
+module.exports = Model;
