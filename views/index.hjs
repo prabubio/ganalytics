@@ -5,6 +5,7 @@
     <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
     <script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
     <script type="text/babel" src="/javascripts/analytics.js"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
     <h1>Analytics</h1>
 </head>
 <body>

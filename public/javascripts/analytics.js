@@ -10,30 +10,30 @@ var AnalyticsDashBoard = React.createClass({
             "revenue": {
                 "2012": {
                     "Server": {
-                        "US": "6M",
-                        "China": "1.34M",
-                        "Japan": "2M",
-                        "EU": "4M"
+                        "US": 6000,
+                        "China": 1340,
+                        "Japan": 2000,
+                        "EU": 4000
                     },
                     "Database": {
-                        "US": "2.4M",
-                        "China": "0.4M",
-                        "Japan": "1.2M",
-                        "EU": "4.7M"
+                        "US": 2400,
+                        "China": 400,
+                        "Japan": 1200,
+                        "EU": 4700
                     }
                 },
                 "2013": {
                     "Server": {
-                        "US": "7M",
-                        "China": "2.34M",
-                        "Japan": "3M",
-                        "EU": "3.5M"
+                        "US": 7000,
+                        "China": 2340,
+                        "Japan": 3000,
+                        "EU": 3500
                     },
                     "Database": {
-                        "US": "4.4M",
-                        "China": "0.2M",
-                        "Japan": "3.2M",
-                        "EU": "2M"
+                        "US": 14400,
+                        "China": 200,
+                        "Japan": 3200,
+                        "EU": 2000
                     }
                 }
             }
@@ -111,15 +111,69 @@ var RevenuePieChart = React.createClass({
 
         var productsData = this.props.data;
         var products = [];
+        var productRev = {};
+        var revPieAvg = {};
+        var revTotal = 0;
 
         for (var product in productsData) {
             if (productsData.hasOwnProperty(product)) {
                 products.push(product);
+
+                var productData = productsData[product];
+                // Get total revenue per product
+                for (var country in productData) {
+                    if (productData.hasOwnProperty(country)) {
+                        if (productRev[product]) {
+                            productRev[product] += productData[country];
+                        } else {
+                            productRev[product] = productData[country];
+                        }
+                    }
+                }
+                revTotal += productRev[product];
             }
         }
 
-        var slices = products.map(function (product, i) {
-            return <div key={product} id={product} className="hold"><div className="pie"></div></div>
+        var pieConstructed = 0;
+        var pieColors = ['#1b458b', '#cc0000'];
+        var slices=[];
+        products.forEach(function (product, i) {
+            revPieAvg[product] = Math.round(productRev[product] / revTotal * 360);
+            console.log('rev avg for product ', product, ' = ', revPieAvg[product]);
+            var start = pieConstructed;
+            var end = revPieAvg[product];
+            var result;
+            pieConstructed = pieConstructed + end;
+
+            var createSlice = function (id, start, end) {
+                var startTransform = 'rotate(' + start + 'deg)';
+                var endTransform = 'rotate(' + end + 'deg)';
+                var divStyle = {
+                    WebkitTransform: startTransform
+                };
+
+                var pieStyle = {
+                    backgroundColor: pieColors[i],
+                    WebkitTransform: endTransform
+                };
+                return (<div
+                    key={id}
+                    id={id}
+                    className="hold"
+                    style={divStyle}>
+                    <div className="pie" style={pieStyle}>'
+                    </div>
+                </div>);
+            };
+
+
+            if (revPieAvg[product] > 180) {
+                slices.push(createSlice(product + '1', start, 180));
+                slices.push(createSlice(product + '2', start + 180, end - 180));
+
+            } else {
+                slices.push(createSlice(product, start, end));
+            }
         });
 
         return (
