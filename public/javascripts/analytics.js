@@ -140,6 +140,7 @@ var RevenuePieChart = React.createClass({
         var pieConstructed = 0;
         var pieColors = ['#1b458b', '#cc0000', '#00cc00'];
         var slices=[];
+        var index=[];
         products.forEach(function (product, i) {
             revPieAvg[product] = Math.round(productRev[product] / revTotal * 360);
             console.log('rev avg for product ', product, ' = ', revPieAvg[product]);
@@ -181,11 +182,19 @@ var RevenuePieChart = React.createClass({
             } else {
                 slices.push(createSlice(product, product, start, end));
             }
+            index.push(
+                <div className='pie-index' key={product}>
+                    <div className='square' style={{backgroundColor: pieColors[i]}}>&nbsp;</div>
+                    <div className='text'>{product}</div>
+                </div>);
         });
 
         return (
             <div className="pieContainer"> &nbsp;
                 {slices}
+                <div className="pieIndexContainer">
+                    {index}
+                </div>
             </div>
         );
     }
