@@ -180,7 +180,10 @@ var RevenuePieChart = React.createClass({
                     data-id={product}
                     style={divStyle}
                     onClick={self.handleClick}>
-                    <div className="pie" style={pieStyle} onClick={self.handleClick} data-id={product}>
+                    <div className="pie"
+                         style={pieStyle}
+                         onClick={self.handleClick}
+                         data-id={product}>
                     </div>
                 </div>);
             };
@@ -195,8 +198,7 @@ var RevenuePieChart = React.createClass({
         });
 
         return (
-            <div className="pieContainer">
-                <div className="pieBackground"></div>
+            <div className="pieContainer"> &nbsp;
                 {slices}
             </div>
         );
